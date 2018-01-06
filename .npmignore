@@ -1,0 +1,9 @@
+*.lcov
+.babelrc
+.nyc_output
+coverage
+examples
+site
+node_modules
+npm-debug.log
+test
