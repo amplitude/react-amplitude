@@ -2,9 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import shallowequal from 'shallowequal';
 
+import { memoize } from '../lib/memoize';
 import { isValidAmplitudeInstance } from '../lib/validation';
 
 class Amplitude extends React.Component {
+  _instrumentedFunctionsCache = new Map();
+  _usedInstrumentedFunctions = new Set();
+
   constructor(props) {
     super(props);
 
@@ -14,15 +18,17 @@ class Amplitude extends React.Component {
     };
   }
 
-  instrument = (func, eventType, eventProperties, callback) => {
+  instrument = memoize((func, eventType) => {
+    const logEvent = this.logEvent;
+
     return (...params) => {
       const retVal = func ? func(...params) : undefined;
 
-      this.logEvent(eventType, eventProperties, callback);
+      logEvent(eventType);
 
       return retVal;
     };
-  };
+  });
 
   componentDidMount() {
     const { props } = this;
@@ -34,6 +40,8 @@ class Amplitude extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    this.instrument.cache.garbageCollect();
+
     const { props } = this;
     const amplitudeInstance = this.getAmplitudeInstance();
 
