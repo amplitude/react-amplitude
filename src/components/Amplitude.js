@@ -18,7 +18,7 @@ class Amplitude extends React.Component {
     };
   }
 
-  instrument = memoize((func, eventType) => {
+  instrument = memoize((eventType, func) => {
     const logEvent = this.logEvent;
 
     return (...params) => {
