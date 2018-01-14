@@ -25,7 +25,7 @@ class AmplitudeProvider extends React.Component {
 
     return {
       amplitudeInstance: props.amplitudeInstance,
-      getAmplitudeCurrentEventPrefix() {
+      getAmplitudeCurrentEventTypePrefix() {
         return null;
       },
       getAmplitudeEventProperties() {
@@ -48,7 +48,7 @@ AmplitudeProvider.propTypes = {
 
 AmplitudeProvider.childContextTypes = {
   amplitudeInstance: PropTypes.object,
-  getAmplitudeCurrentEventPrefix: PropTypes.func,
+  getAmplitudeCurrentEventTypePrefix: PropTypes.func,
   getAmplitudeEventProperties: PropTypes.func,
 };
 
