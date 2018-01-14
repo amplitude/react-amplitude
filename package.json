@@ -1,6 +1,6 @@
 {
   "name": "@amplitude/react-amplitude",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Instrument Amplitude with a React API",
   "homepage": "https://github.com/amplitude/react-amplitude",
   "main": "dist/commonjs/index.js",
