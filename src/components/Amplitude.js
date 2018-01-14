@@ -37,7 +37,7 @@ class Amplitude extends React.Component {
   };
 
   logEvent = (eventType, eventProperties, callback) => {
-    const prefix = this.getAmplitudeCurrentPrefix();
+    const prefix = this.getAmplitudeCurrentEventPrefix();
     const formattedEventType = prefix ? `${prefix} ${eventType}` : eventType;
 
     this._logEvent(formattedEventType, eventProperties, callback);
@@ -45,7 +45,7 @@ class Amplitude extends React.Component {
 
   instrument = memoize((eventType, func) => {
     return (...params) => {
-      const prefix = this.getAmplitudeCurrentPrefix();
+      const prefix = this.getAmplitudeCurrentEventPrefix();
       const formattedEventType = prefix ? `${prefix} ${eventType}` : eventType;
 
       Amplitude._instrumentFrameCount += 1;
@@ -90,8 +90,7 @@ class Amplitude extends React.Component {
   getChildContext() {
     return {
       getAmplitudeEventProperties: this.getAmplitudeEventProperties,
-      getAmplitudeNameHierarchy: this.getAmplitudeNameHierarchy,
-      getAmplitudeCurrentPrefix: this.getAmplitudeCurrentPrefix,
+      getAmplitudeCurrentEventPrefix: this.getAmplitudeCurrentEventPrefix,
     };
   }
 
@@ -112,31 +111,37 @@ class Amplitude extends React.Component {
 
   getAmplitudeEventProperties = () => {
     const { props, context } = this;
+    const inheritedEventProperties = context.getAmplitudeEventProperties();
+    const componentEventProperties = props.eventProperties || {};
 
     return {
-      ...context.getAmplitudeEventProperties(),
-      ...(props.eventProperties || {}),
-      $hierarchy: this.getAmplitudeNameHierarchy(),
+      ...inheritedEventProperties,
+      ...Object.keys(componentEventProperties).reduce((accum, propKey) => {
+        if (propKey in inheritedEventProperties) {
+          if (Array.isArray(inheritedEventProperties[propKey])) {
+            accum[propKey] = [
+              ...inheritedEventProperties[propKey],
+              componentEventProperties[propKey],
+            ];
+          } else {
+            accum[propKey] = [inheritedEventProperties[propKey], componentEventProperties[propKey]];
+          }
+        } else {
+          accum[propKey] = componentEventProperties[propKey];
+        }
+
+        return accum;
+      }, {}),
     };
   };
 
-  getAmplitudeNameHierarchy = () => {
+  getAmplitudeCurrentEventPrefix = () => {
     const { props, context } = this;
 
-    if (typeof props.name === 'string' && props.name.length > 0) {
-      return [...context.getAmplitudeNameHierarchy(), props.name];
+    if (typeof props.eventPrefix === 'string' && props.eventPrefix.length > 0) {
+      return props.eventPrefix;
     } else {
-      return context.getAmplitudeNameHierarchy();
-    }
-  };
-
-  getAmplitudeCurrentPrefix = () => {
-    const { props, context } = this;
-
-    if (typeof props.prefix === 'string' && props.prefix.length > 0) {
-      return props.prefix;
-    } else {
-      return context.getAmplitudeCurrentPrefix();
+      return context.getAmplitudeCurrentEventPrefix();
     }
   };
 
@@ -154,22 +159,19 @@ class Amplitude extends React.Component {
 Amplitude.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
   eventProperties: PropTypes.object,
-  name: PropTypes.string,
-  prefix: PropTypes.string,
+  eventPrefix: PropTypes.string,
   userProperties: PropTypes.object,
 };
 
 Amplitude.contextTypes = {
   amplitudeInstance: PropTypes.object,
-  getAmplitudeCurrentPrefix: PropTypes.func,
+  getAmplitudeCurrentEventPrefix: PropTypes.func,
   getAmplitudeEventProperties: PropTypes.func,
-  getAmplitudeNameHierarchy: PropTypes.func,
 };
 
 Amplitude.childContextTypes = {
-  getAmplitudeCurrentPrefix: PropTypes.func,
+  getAmplitudeCurrentEventPrefix: PropTypes.func,
   getAmplitudeEventProperties: PropTypes.func,
-  getAmplitudeNameHierarchy: PropTypes.func,
 };
 
 export default Amplitude;
