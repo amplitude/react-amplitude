@@ -1,3 +1,4 @@
+import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
 import shallowequal from 'shallowequal';
@@ -15,13 +16,19 @@ class Amplitude extends React.Component {
   constructor(props) {
     super(props);
 
+    if (typeof props.debounceInterval === 'number') {
+      this._logEvent = debounce(this._makeLogEvent(), props.debounceInterval);
+    } else {
+      this._logEvent = this._makeLogEvent();
+    }
+
     this._renderPropParams = {
       logEvent: this.logEvent,
       instrument: this.instrument,
     };
   }
 
-  _logEvent = (eventType, eventProperties, callback) => {
+  _makeLogEvent = () => (eventType, eventProperties, callback) => {
     const amplitudeInstance = this.getAmplitudeInstance();
 
     if (amplitudeInstance) {
@@ -36,7 +43,7 @@ class Amplitude extends React.Component {
     }
   };
 
-  logEvent = (eventType, eventProperties, callback) => {
+  logEvent = () => (eventType, eventProperties, callback) => {
     const prefix = this.getAmplitudeCurrentEventTypePrefix();
     const formattedEventType = prefix ? `${prefix} ${eventType}` : eventType;
 
@@ -66,6 +73,18 @@ class Amplitude extends React.Component {
       return retVal;
     };
   });
+
+  componentWillReceiveProps(nextProps) {
+    const { props } = this;
+
+    if (typeof nextProps.debounceInterval === 'number') {
+      if (props.debounceInterval !== nextProps.debounceInterval) {
+        this.logEvent = debounce(this._makeLogEvent(), nextProps.debounceInterval);
+      }
+    } else if (typeof props.debounceInterval === 'number') {
+      this.logEvent = this._makeLogEvent();
+    }
+  }
 
   componentDidMount() {
     const { props } = this;
@@ -164,6 +183,7 @@ Amplitude.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
   eventProperties: PropTypes.object,
   eventTypePrefix: PropTypes.string,
+  debounceInterval: PropTypes.number,
   mountEventType: PropTypes.string,
   userProperties: PropTypes.object,
 };
