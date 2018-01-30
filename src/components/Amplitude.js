@@ -7,12 +7,6 @@ import { memoize } from '../lib/memoize';
 import { isValidAmplitudeInstance } from '../lib/validation';
 
 class Amplitude extends React.Component {
-  static _instrumentFrameCount = 0;
-  static _accumulatedEventTypes = [];
-
-  _instrumentedFunctionsCache = new Map();
-  _usedInstrumentedFunctions = new Set();
-
   constructor(props) {
     super(props);
 
@@ -44,31 +38,14 @@ class Amplitude extends React.Component {
   };
 
   logEvent = () => (eventType, eventProperties, callback) => {
-    const prefix = this.getAmplitudeCurrentEventTypePrefix();
-    const formattedEventType = prefix ? `${prefix} ${eventType}` : eventType;
-
-    this._logEvent(formattedEventType, eventProperties, callback);
+    this._logEvent(eventType, eventProperties, callback);
   };
 
   instrument = memoize((eventType, func) => {
     return (...params) => {
-      const prefix = this.getAmplitudeCurrentEventTypePrefix();
-      const formattedEventType = prefix ? `${prefix} ${eventType}` : eventType;
-
-      Amplitude._instrumentFrameCount += 1;
-      Amplitude._accumulatedEventTypes.push(formattedEventType);
-
       const retVal = func ? func(...params) : undefined;
 
-      Amplitude._instrumentFrameCount -= 1;
-
-      if (Amplitude._instrumentFrameCount === 0) {
-        this._logEvent(
-          Amplitude._accumulatedEventTypes[Amplitude._accumulatedEventTypes.length - 1],
-        );
-
-        Amplitude._accumulatedEventTypes = [];
-      }
+      this._logEvent(eventType);
 
       return retVal;
     };
@@ -113,7 +90,6 @@ class Amplitude extends React.Component {
   getChildContext() {
     return {
       getAmplitudeEventProperties: this.getAmplitudeEventProperties,
-      getAmplitudeCurrentEventTypePrefix: this.getAmplitudeCurrentEventTypePrefix,
     };
   }
 
@@ -158,16 +134,6 @@ class Amplitude extends React.Component {
     };
   };
 
-  getAmplitudeCurrentEventTypePrefix = () => {
-    const { props, context } = this;
-
-    if (typeof props.eventTypePrefix === 'string' && props.eventTypePrefix.length > 0) {
-      return props.eventTypePrefix;
-    } else {
-      return context.getAmplitudeCurrentEventTypePrefix();
-    }
-  };
-
   render() {
     const { props } = this;
 
@@ -182,7 +148,6 @@ class Amplitude extends React.Component {
 Amplitude.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
   eventProperties: PropTypes.object,
-  eventTypePrefix: PropTypes.string,
   debounceInterval: PropTypes.number,
   mountEventType: PropTypes.string,
   userProperties: PropTypes.object,
@@ -190,12 +155,10 @@ Amplitude.propTypes = {
 
 Amplitude.contextTypes = {
   amplitudeInstance: PropTypes.object,
-  getAmplitudeCurrentEventTypePrefix: PropTypes.func,
   getAmplitudeEventProperties: PropTypes.func,
 };
 
 Amplitude.childContextTypes = {
-  getAmplitudeCurrentEventTypePrefix: PropTypes.func,
   getAmplitudeEventProperties: PropTypes.func,
 };
 
