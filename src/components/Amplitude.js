@@ -11,9 +11,9 @@ class Amplitude extends React.Component {
     super(props);
 
     if (typeof props.debounceInterval === 'number') {
-      this._logEvent = debounce(this._makeLogEvent(), props.debounceInterval);
+      this.logEvent = debounce(this._makeLogEvent(), props.debounceInterval);
     } else {
-      this._logEvent = this._makeLogEvent();
+      this.logEvent = this._makeLogEvent();
     }
 
     this._renderPropParams = {
@@ -37,15 +37,11 @@ class Amplitude extends React.Component {
     }
   };
 
-  logEvent = () => (eventType, eventProperties, callback) => {
-    this._logEvent(eventType, eventProperties, callback);
-  };
-
   instrument = memoize((eventType, func) => {
     return (...params) => {
       const retVal = func ? func(...params) : undefined;
 
-      this._logEvent(eventType);
+      this.logEvent(eventType);
 
       return retVal;
     };
