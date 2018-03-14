@@ -21,10 +21,16 @@ class AmplitudeProvider extends React.Component {
   }
 
   getChildContext() {
-    const { props } = this;
+    const { context, props } = this;
 
     return {
-      amplitudeInstance: props.amplitudeInstance,
+      getAmplitudeInstance(instanceName = '$default_instance') {
+        if (props.amplitudeInstance._instanceName === instanceName) {
+          return props.amplitudeInstance;
+        } else if (context.getAmplitudeInstance) {
+          return context.getAmplitudeInstance(instanceName);
+        }
+      },
       getAmplitudeEventProperties() {
         return props.eventProperties || {};
       },
@@ -44,8 +50,12 @@ AmplitudeProvider.propTypes = {
   userId: PropTypes.string,
 };
 
+AmplitudeProvider.contextTypes = {
+  getAmplitudeInstance: PropTypes.func,
+};
+
 AmplitudeProvider.childContextTypes = {
-  amplitudeInstance: PropTypes.object,
+  getAmplitudeInstance: PropTypes.func,
   getAmplitudeEventProperties: PropTypes.func,
 };
 

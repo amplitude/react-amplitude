@@ -90,8 +90,8 @@ class Amplitude extends React.Component {
   }
 
   getAmplitudeInstance = () => {
-    const { context } = this;
-    const { amplitudeInstance } = context;
+    const { context, props } = this;
+    const amplitudeInstance = context.getAmplitudeInstance(props.instanceName);
 
     if (!isValidAmplitudeInstance(amplitudeInstance)) {
       console.error(
@@ -131,14 +131,15 @@ class Amplitude extends React.Component {
 
 Amplitude.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-  eventProperties: PropTypes.object,
+  eventProperties: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   debounceInterval: PropTypes.number,
+  instanceName: PropTypes.string,
   mountEventType: PropTypes.string,
   userProperties: PropTypes.object,
 };
 
 Amplitude.contextTypes = {
-  amplitudeInstance: PropTypes.object,
+  getAmplitudeInstance: PropTypes.func,
   getAmplitudeEventProperties: PropTypes.func,
 };
 
