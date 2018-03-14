@@ -111,27 +111,15 @@ class Amplitude extends React.Component {
   getAmplitudeEventProperties = () => {
     const { props, context } = this;
     const inheritedEventProperties = context.getAmplitudeEventProperties();
-    const componentEventProperties = props.eventProperties || {};
 
-    return {
-      ...inheritedEventProperties,
-      ...Object.keys(componentEventProperties).reduce((accum, propKey) => {
-        if (propKey in inheritedEventProperties) {
-          if (Array.isArray(inheritedEventProperties[propKey])) {
-            accum[propKey] = [
-              ...inheritedEventProperties[propKey],
-              componentEventProperties[propKey],
-            ];
-          } else {
-            accum[propKey] = [inheritedEventProperties[propKey], componentEventProperties[propKey]];
-          }
-        } else {
-          accum[propKey] = componentEventProperties[propKey];
-        }
-
-        return accum;
-      }, {}),
-    };
+    if (typeof props.eventProperties === 'function') {
+      return props.eventProperties(inheritedEventProperties);
+    } else {
+      return {
+        ...inheritedEventProperties,
+        ...props.eventProperties,
+      };
+    }
   };
 
   render() {
