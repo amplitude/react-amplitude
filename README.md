@@ -162,7 +162,7 @@ function Button(props) {
 
 `instrument` is a function that can be used to declaratively log events. If you have pre-existing event handlers, just wrap the functions with an `instrument`, and events will fire every time your normal event handlers are executed. `instrument` takes two parameters, the event type and the function to proxy.
 
-`instrument` is also useful if you would like to prevent re-rendering via shouldComponentUpdate optimizations like PureComponent. It memoizes its arguments and returns the same function instance across re-renders.
+`instrument` is also useful if you would like to prevent re-rendering via shouldComponentUpdate optimizations like PureComponent. It memoizes its arguments and returns the same function instance across re-renders. For this reason, it's not recommended to use `instrument` for functions that change on every render (i.e. inlined or "arrow" functions in `render`).
 
 Example:
 
