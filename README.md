@@ -2,6 +2,10 @@
 
 A React component library for easy product analytics instrumentation.
 
+## Work In Progress
+
+Please note this library is a work-in-progress. Its API will likely change in future versions.
+
 ## The problems with traditional, imperative event-based logging
 
 - Contextual event information (i.e. "event properties") often require lots of plumbing to the code path where the events are logged, requiring more code and breaking encapsulation.
