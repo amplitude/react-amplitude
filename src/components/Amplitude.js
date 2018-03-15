@@ -53,9 +53,19 @@ class Amplitude extends React.Component {
     if (typeof nextProps.debounceInterval === 'number') {
       if (props.debounceInterval !== nextProps.debounceInterval) {
         this.logEvent = debounce(this._makeLogEvent(), nextProps.debounceInterval);
+
+        this._renderPropParams = {
+          ...this._renderPropParams,
+          logEvent: this.logEvent,
+        };
       }
     } else if (typeof props.debounceInterval === 'number') {
       this.logEvent = this._makeLogEvent();
+
+      this._renderPropParams = {
+        ...this._renderPropParams,
+        logEvent: this.logEvent,
+      };
     }
   }
 
