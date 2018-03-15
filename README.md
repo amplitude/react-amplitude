@@ -34,8 +34,9 @@ This example renders an "app" with a single button. When the button is clicked, 
 {
   "event_type": "button click",
   "event_properties": {
-    "scope": ["root", "main view", "button"]
+    "scope": ["root", "home view", "button"]
   }
+  ...
 }
 ```
 
