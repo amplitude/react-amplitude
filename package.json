@@ -1,7 +1,7 @@
 {
   "name": "@amplitude/react-amplitude",
-  "version": "1.0.0-alpha.8",
-  "description": "Instrument Amplitude with a React API",
+  "version": "1.0.0-alpha.9",
+  "description": "A React component library for easy product analytics instrumentation",
   "homepage": "https://github.com/amplitude/react-amplitude",
   "main": "dist/commonjs/index.js",
   "module": "dist/es/index.js",
