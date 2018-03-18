@@ -26,7 +26,7 @@ class LogOnMount extends React.Component {
         ref={this.setRef}
         instanceName={props.instanceName}
         eventProperties={props.eventProperties}>
-        >{props.children}
+        {props.children}
       </Amplitude>
     );
   }
