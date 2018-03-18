@@ -21,12 +21,21 @@ class LogOnMount extends React.Component {
   render() {
     const { props } = this;
 
-    return <Amplitude ref={this.setRef}>{props.children}</Amplitude>;
+    return (
+      <Amplitude
+        ref={this.setRef}
+        instanceName={props.instanceName}
+        eventProperties={props.eventProperties}>
+        >{props.children}
+      </Amplitude>
+    );
   }
 }
 
 LogOnMount.propTypes = {
+  eventProperties: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   eventType: PropTypes.string.isRequired,
+  instanceName: PropTypes.string,
 };
 
 export default LogOnMount;
