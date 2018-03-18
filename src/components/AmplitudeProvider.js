@@ -29,6 +29,8 @@ class AmplitudeProvider extends React.Component {
           return props.amplitudeInstance;
         } else if (context.getAmplitudeInstance) {
           return context.getAmplitudeInstance(instanceName);
+        } else {
+          return null;
         }
       },
       getAmplitudeEventProperties() {

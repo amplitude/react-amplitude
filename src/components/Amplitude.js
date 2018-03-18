@@ -101,6 +101,11 @@ class Amplitude extends React.Component {
 
   getAmplitudeInstance = () => {
     const { context, props } = this;
+
+    if (!context.getAmplitudeInstance) {
+      return null;
+    }
+
     const amplitudeInstance = context.getAmplitudeInstance(props.instanceName);
 
     if (!isValidAmplitudeInstance(amplitudeInstance)) {
@@ -116,6 +121,11 @@ class Amplitude extends React.Component {
 
   getAmplitudeEventProperties = () => {
     const { props, context } = this;
+
+    if (!context.getAmplitudeEventProperties) {
+      return props.eventProperties;
+    }
+
     const inheritedEventProperties = context.getAmplitudeEventProperties();
 
     if (typeof props.eventProperties === 'function') {
