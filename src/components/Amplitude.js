@@ -76,10 +76,6 @@ class Amplitude extends React.Component {
     if (amplitudeInstance && props.userProperties) {
       amplitudeInstance.setUserProperties(props.userProperties);
     }
-
-    if (props.mountEventType) {
-      this.logEvent(props.mountEventType);
-    }
   }
 
   componentDidUpdate(prevProps) {
@@ -144,17 +140,16 @@ class Amplitude extends React.Component {
     if (typeof props.children === 'function') {
       return props.children(this._renderPropParams);
     } else {
-      return props.children;
+      return props.children || null;
     }
   }
 }
 
 Amplitude.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   eventProperties: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   debounceInterval: PropTypes.number,
   instanceName: PropTypes.string,
-  mountEventType: PropTypes.string,
   userProperties: PropTypes.object,
 };
 
