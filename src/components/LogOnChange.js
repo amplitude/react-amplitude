@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import shallowequal from 'shallowequal';
 
 import Amplitude from './Amplitude';
 
@@ -9,7 +10,7 @@ class LogOnChange extends React.Component {
   componentDidUpdate(prevProps) {
     const { props } = this;
 
-    if (prevProps.value !== props.value) {
+    if (!shallowequal(prevProps.value, props.value)) {
       if (this._amplitudeRef) {
         this._amplitudeRef.logEvent(props.eventType);
       }
