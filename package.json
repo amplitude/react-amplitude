@@ -38,7 +38,6 @@
     "shallowequal": "^1.0.2"
   },
   "peerDependencies": {
-    "amplitude-js": "^3.5.0",
     "react": "^0.14.0 || ^15.0.0-0 || ^16.0.0-rc"
   },
   "devDependencies": {
