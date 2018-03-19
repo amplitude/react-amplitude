@@ -67,11 +67,13 @@ function Button(props) {
 function HomeView() {
   return (
     <Amplitude
-      mountEventType="viewed home view"
       eventProperties={inheritedProperties => ({
         scope: [...inheritedProperties.scope, 'home view'],
       })}
     >
+      <LogOnMount
+        eventType="viewed home view"
+      />
       <Button
         onClick={() => alert('Hi!')}
       >
@@ -120,7 +122,7 @@ react-amplitude does not come with its own copy of the Amplitude JavaScript SDK.
 
 ## API
 
-### AmplitudeProvider Props
+### AmplitudeProvider props
 
 #### amplitudeInstance
 
@@ -134,7 +136,7 @@ An optional prop that can be used to initialize the Amplitude instance with the 
 
 An optional prop that can be used to attribute all events to a specific user.
 
-### Amplitude Props
+### Amplitude props
 
 #### children
 
@@ -197,13 +199,41 @@ If a function is provided, it will be called with a single parameter, `inherited
 
 If provided, events logged by the component will be debounced by this amount, in milliseconds.
 
-#### mountEventType
-
-If provided, when this component mounts, it will log an event with this value as the event type.
-
 #### userProperties
 
 An optional object that if provided, will trigger updates to the current user's "user properties."
+
+### LogOnMount props
+
+#### eventType
+
+When this component mounts, it will log an event with this value as the event type.
+
+#### eventProperties
+
+These properties will be applied to the event when the component mounts.
+
+### instanceName
+
+THe Amplitude instance to log events to.
+
+### LogOnChange props
+
+#### value
+
+Required prop, that when changes (diffing is done with shallow equality comparison), logs an event.
+
+#### eventType
+
+When the `value` prop changes, it will log an event with this value as the event type.
+
+#### eventProperties
+
+These properties will be applied to the event when the component mounts.
+
+### instanceName
+
+The Amplitude instance to log events to.
 
 ## License
 
