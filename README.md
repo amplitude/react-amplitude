@@ -1,5 +1,8 @@
 # react-amplitude
 
+[![Travis](https://img.shields.io/travis/amplitude/react-amplitude.svg?style=flat-square)](https://travis-ci.org/amplitude/react-amplitude)
+[![npm](https://img.shields.io/npm/v/@amplitude/react-amplitude.svg?style=flat-square)](https://www.npmjs.com/package/@amplitude/react-amplitude)
+
 A React component library for easy product analytics instrumentation.
 
 ## Work In Progress
