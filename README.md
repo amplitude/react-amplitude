@@ -29,83 +29,230 @@ Unlike "autotrack" solutions, react-amplitude does require _some_ code changes i
 
 If you use common reusable components in your React application like Buttons, Dropdowns, Links, etc., you should be able to achieve "autotrack"-like instrumentation with just a few lines of code. And from there, it can be really simple to instrument new properties and context throughout your application, giving you the same flexibility as manual event logging.
 
-## Usage
+## Example: Instrumenting Tic-Tac-Toe (From Facebook's [Intro to React Tutorial](https://reactjs.org/tutorial/tutorial.html))
 
-This example renders an "app" with a single button. When the button is clicked, it will log an Amplitude event that looks like:
+Events logged:
+ - start game
+ - game won
+ - click square
+ - jump to move
+ - go to game start
 
-```
-{
-  "event_type": "button click",
-  "event_properties": {
-    "scope": ["root", "home view", "button"]
-  }
-  ...
-}
-```
+ Event properties:
+ - scope (array; "square", "history", "game")
+ - moves made (number)
+ - winner ("X" or "O")
+ - current player ("X" or "O")
+ 
 
 ```jsx
-import React from 'react';
-import { render } from 'react-dom';
-import amplitude from 'amplitude-js';
-import { AmplitudeProvider, Amplitude } from '@amplitude/react-amplitude';
+import React from "react";
+import { render } from "react-dom";
+import amplitude from "amplitude-js";
+import {
+  AmplitudeProvider,
+  Amplitude,
+  LogOnMount
+} from "@amplitude/react-amplitude";
 
-function Button(props) {
+const AMPLITUDE_KEY = "";
+
+function Square(props) {
   return (
     <Amplitude
-      eventProperties={inheritedProperties => ({
-        scope: [...inheritedProperties.scope, 'button'],
+      eventProperties={inheritedProps => ({
+        ...inheritedProps,
+        scope: [...inheritedProps.scope, "square"]
       })}
     >
-      {({ instrument }) =>
+      {({ instrument }) => (
         <button
-          onClick={instrument('button click', props.onClick)}
+          className="square"
+          onClick={instrument("click square", props.onClick)}
         >
-          {props.children}
+          {props.value}
         </button>
-      }
+      )}
     </Amplitude>
-  )
+  );
 }
 
-function HomeView() {
-  return (
-    <Amplitude
-      eventProperties={inheritedProperties => ({
-        scope: [...inheritedProperties.scope, 'home view'],
-      })}
-    >
-      <LogOnMount
-        eventType="viewed home view"
+class Board extends React.Component {
+  renderSquare(i) {
+    return (
+      <Square
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)}
       />
-      <Button
-        onClick={() => alert('Hi!')}
-      >
-        Click Me
-      </Button>
-    </Amplitude>
-  )
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        <div className="board-row">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </div>
+    );
+  }
 }
 
-function App({ userId }) {
-  return (
-    <AmplitudeProvider
-      amplitudeInstance={amplitude.getInstance()}
-      apiKey={AMPLITUDE_KEY}
-      userId={userId}
-    >
-      <Amplitude
-        eventProperties={{
-          scope: ['root'],
-        }}
+class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      history: [
+        {
+          squares: Array(9).fill(null)
+        }
+      ],
+      stepNumber: 0,
+      xIsNext: true
+    };
+  }
+
+  handleClick(i) {
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? "X" : "O";
+    this.setState({
+      history: history.concat([
+        {
+          squares: squares
+        }
+      ]),
+      stepNumber: history.length,
+      xIsNext: !this.state.xIsNext
+    });
+  }
+
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: step % 2 === 0
+    });
+  }
+
+  render() {
+    const history = this.state.history;
+    const current = history[this.state.stepNumber];
+    const winner = calculateWinner(current.squares);
+
+    const moves = history.map((step, move) => {
+      const desc = move ? "Go to move #" + move : "Go to game start";
+      return (
+        <li key={move}>
+          <Amplitude
+            eventProperties={inheritedProps => ({
+              ...inheritedProps,
+              scope: [...inheritedProps.scope, "move button"]
+            })}
+          >
+            {({ logEvent }) => (
+              <button
+                onClick={() => {
+                  logEvent(move ? "jump to move" : "go to game start");
+                  this.jumpTo(move);
+                }}
+              >
+                {desc}
+              </button>
+            )}
+          </Amplitude>
+        </li>
+      );
+    });
+
+    let status;
+    if (winner) {
+      status = "Winner: " + winner;
+    } else {
+      status = "Current player: " + (this.state.xIsNext ? "X" : "O");
+    }
+
+    return (
+      <AmplitudeProvider
+        amplitudeInstance={amplitude.getInstance()}
+        apiKey={AMPLITUDE_KEY}
       >
-        <HomeView />
-      </Amplitude>
-    </AmplitudeProvider>
-  )
+        <Amplitude
+          eventProperties={{
+            scope: ["game"],
+            "moves made": this.state.step,
+            "current player": this.state.xIsNext ? "X" : "O",
+            winner
+          }}
+        >
+          <LogOnMount eventType="start game" />
+          {!!winner && <LogOnMount eventType="game won" />}
+          <div className="game">
+            <div className="game-board">
+              <Board
+                squares={current.squares}
+                onClick={i => this.handleClick(i)}
+              />
+            </div>
+            <Amplitude
+              eventProperties={inheritedProps => ({
+                ...inheritedProps,
+                scope: [...inheritedProps.scope, "history"]
+              })}
+            >
+              <div className="game-info">
+                <div>{status}</div>
+                <ol>{moves}</ol>
+              </div>
+            </Amplitude>
+          </div>
+        </Amplitude>
+      </AmplitudeProvider>
+    );
+  }
 }
 
-render(<App />, document.getElementById('root'));
+// ========================================
+
+render(<Game />, document.getElementById("root"));
+
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
 ```
+
+[![Edit nnowj5nonj](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/nnowj5nonj)
 
 ## Installation
 
