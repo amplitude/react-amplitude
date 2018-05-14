@@ -73,7 +73,7 @@ class NestedMap {
           const shouldDeleteChild = child.delete(keys.slice(1));
 
           if (shouldDeleteChild) {
-            this.children.delete(keys.slice(1));
+            this.children.delete(keys[0]);
           }
 
           if (this.children.size === 0) {
