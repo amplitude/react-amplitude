@@ -41,7 +41,7 @@ LogOnChange.propTypes = {
   eventProperties: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   eventType: PropTypes.string.isRequired,
   instanceName: PropTypes.string,
-  value: PropTypes.any.isRequired,
+  value: PropTypes.any,
 };
 
 export default LogOnChange;
