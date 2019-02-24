@@ -47,7 +47,7 @@ class Amplitude extends React.Component {
     };
   });
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { props } = this;
 
     if (typeof nextProps.debounceInterval === 'number') {
