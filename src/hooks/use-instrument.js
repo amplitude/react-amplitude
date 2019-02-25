@@ -1,13 +1,19 @@
+import React from 'react';
 import { useLogEvent } from './use-log-event';
 
-export const useInstrument = (context, instanceName, eventProperties, eventType, func) => {
-  const logEvent = useLogEvent(context, instanceName, eventProperties);
+export const useInstrument = (instanceName, eventProperties, debounceInterval) => {
+  const logEvent = useLogEvent(instanceName, eventProperties, debounceInterval);
 
-  return function instrumentedFunc(...params) {
-    const retVal = func ? func.apply(this, params) : undefined;
+  return React.useCallback(
+    function instrument(eventType, func) {
+      return function instrumentedFunc(...params) {
+        const retVal = func ? func.apply(this, params) : undefined;
 
-    logEvent(eventType);
+        logEvent(eventType);
 
-    return retVal;
-  };
+        return retVal;
+      };
+    },
+    [logEvent],
+  );
 };

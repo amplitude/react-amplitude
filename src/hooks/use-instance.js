@@ -1,8 +1,9 @@
 import React from 'react';
+import { AmplitudeContext } from '../components/AmplitudeProvider';
 import { isValidAmplitudeInstance } from '../lib/validation';
 
-export const useInstance = (context, instanceName) => {
-  const { getAmplitudeInstance } = React.useContext(context);
+export const useInstance = instanceName => {
+  const { getAmplitudeInstance } = React.useContext(AmplitudeContext);
 
   if (!getAmplitudeInstance) {
     return null;

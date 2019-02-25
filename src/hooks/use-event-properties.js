@@ -1,7 +1,8 @@
 import React from 'react';
+import { AmplitudeContext } from '../components/AmplitudeProvider';
 
-export const useEventProperties = (context, eventProperties) => {
-  const { getAmplitudeEventProperties } = React.useContext(context);
+export const useEventProperties = eventProperties => {
+  const { getAmplitudeEventProperties } = React.useContext(AmplitudeContext);
 
   if (!getAmplitudeEventProperties) {
     return eventProperties;
