@@ -3,62 +3,54 @@ import React from 'react';
 
 import { isValidAmplitudeInstance } from '../lib/validation';
 
-class AmplitudeProvider extends React.Component {
-  componentWillMount() {
-    const { props } = this;
+export const AmplitudeContext = React.createContext({
+  eventProperties: {},
+  instances: {},
+});
 
-    if (isValidAmplitudeInstance(props.amplitudeInstance)) {
-      if (props.apiKey) {
-        props.amplitudeInstance.init(props.apiKey);
+const AmplitudeProvider = ({ amplitudeInstance, apiKey, children, eventProperties, userId }) => {
+  const inheritedContext = React.useContext(AmplitudeContext);
+
+  const contextValue = React.useMemo(() => {
+    return {
+      eventProperties: { ...inheritedContext.eventProperties, ...eventProperties },
+      instances: {
+        ...inheritedContext.instances,
+        [amplitudeInstance._instanceName]: amplitudeInstance,
+      },
+    };
+  }, [
+    amplitudeInstance,
+    amplitudeInstance._instanceName,
+    eventProperties,
+    inheritedContext.eventProperties,
+    inheritedContext.instances,
+  ]);
+
+  React.useEffect(() => {
+    if (isValidAmplitudeInstance(amplitudeInstance)) {
+      if (apiKey) {
+        amplitudeInstance.init(apiKey);
       }
 
-      if (props.userId) {
-        props.amplitudeInstance.setUserId(props.userId);
+      if (userId) {
+        amplitudeInstance.setUserId(userId);
       }
     } else {
       console.error('AmplitudeProvider was not provided with a valid "amplitudeInstance" prop.');
     }
-  }
+    // Intentionally ignore changes to props for now and only init/setUser once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  getChildContext() {
-    const { context, props } = this;
-
-    return {
-      getAmplitudeInstance(instanceName = '$default_instance') {
-        if (props.amplitudeInstance._instanceName === instanceName) {
-          return props.amplitudeInstance;
-        } else if (context.getAmplitudeInstance) {
-          return context.getAmplitudeInstance(instanceName);
-        } else {
-          return null;
-        }
-      },
-      getAmplitudeEventProperties() {
-        return props.eventProperties || {};
-      },
-    };
-  }
-
-  render() {
-    const { props } = this;
-
-    return props.children;
-  }
-}
+  return <AmplitudeContext.Provider value={contextValue}>{children}</AmplitudeContext.Provider>;
+};
 
 AmplitudeProvider.propTypes = {
   amplitudeInstance: PropTypes.object.isRequired,
   apiKey: PropTypes.string,
+  eventProperties: PropTypes.object,
   userId: PropTypes.string,
-};
-
-AmplitudeProvider.contextTypes = {
-  getAmplitudeInstance: PropTypes.func,
-};
-
-AmplitudeProvider.childContextTypes = {
-  getAmplitudeInstance: PropTypes.func,
-  getAmplitudeEventProperties: PropTypes.func,
 };
 
 export default AmplitudeProvider;

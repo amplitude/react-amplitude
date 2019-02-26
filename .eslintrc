@@ -8,7 +8,8 @@
     "plugins": [
         "import",
         "prettier",
-        "react"
+        "react",
+        "react-hooks"
     ],
     "parserOptions": {
         "ecmaVersion": 6,
@@ -16,7 +17,7 @@
         "ecmaFeatures": {
             "jsx": true,
             "experimentalObjectRestSpread": true
-        },
+        }
     },
     "env": {
         "browser": true,
@@ -26,7 +27,7 @@
     },
     "rules": {
         "accessor-pairs": 2,
-        "camelcase": [2, { "properties": "never" }],
+        "camelcase": [2, { "properties": "never", "allow": ["^UNSAFE_"] }],
         "consistent-this": [0, "just_dont_do_it_at_all"],
         "constructor-super": 2,
         "curly": 2,
@@ -84,11 +85,18 @@
         "quote-props": [2, "as-needed"],
         "radix": 2,
         "react/prop-types": 0,
+        "react-hooks/exhaustive-deps": 2,
+        "react-hooks/rules-of-hooks": 2,
         "space-infix-ops": 2,
         "spaced-comment": [2, "always"],
         "strict": [2, "safe"],
         "valid-jsdoc": 2,
         "wrap-iife": 2,
         "yoda": [2, "never"]
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     }
 }
