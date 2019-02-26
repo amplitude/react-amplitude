@@ -6,33 +6,25 @@ import { useInstrument } from '../hooks/use-instrument';
 import { useLogEvent } from '../hooks/use-log-event';
 import { useSetUserProperties } from '../hooks/use-set-user-properties';
 
-const useMergedContext = eventProperties => {
-  const context = React.useContext(AmplitudeContext);
-  const { getAmplitudeEventProperties } = context;
-  const newGetAmplitudeEventProperties = React.useCallback(() => {
-    return { ...getAmplitudeEventProperties(), ...(eventProperties || {}) };
-  });
-
-  return React.useMemo(
-    () => ({
-      ...context,
-      getAmplitudeEventProperties: newGetAmplitudeEventProperties,
-    }),
-    [context, newGetAmplitudeEventProperties],
-  );
-};
-
 const Amplitude = ({
   children,
   debounceInterval,
   eventProperties,
-  instanceName,
+  instanceName = '$default_instance',
   userProperties,
 }) => {
   const logEvent = useLogEvent(instanceName, eventProperties, debounceInterval);
   const instrument = useInstrument(instanceName, eventProperties, debounceInterval);
-  const mergedContext = useMergedContext(eventProperties);
+
   useSetUserProperties(instanceName, userProperties);
+
+  const inheritedContext = React.useContext(AmplitudeContext);
+  const contextValue = React.useMemo(() => {
+    return {
+      ...inheritedContext,
+      eventProperties: { ...inheritedContext.eventProperties, ...eventProperties },
+    };
+  }, [eventProperties, inheritedContext]);
 
   let childElements;
 
@@ -43,7 +35,7 @@ const Amplitude = ({
   }
 
   return (
-    <AmplitudeContext.Provider value={mergedContext}>{childElements}</AmplitudeContext.Provider>
+    <AmplitudeContext.Provider value={contextValue}>{childElements}</AmplitudeContext.Provider>
   );
 };
 

@@ -20,7 +20,7 @@
     "prebuild": "npm run lint",
     "lint": "eslint src --fix",
     "test:cov": "cross-env NODE_ENV=test nyc npm test",
-    "test": "mocha --compilers js:babel-core/register --reporter spec test/**/*.test.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",

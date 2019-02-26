@@ -3,24 +3,30 @@ import React from 'react';
 
 import { isValidAmplitudeInstance } from '../lib/validation';
 
-export const AmplitudeContext = React.createContext();
+export const AmplitudeContext = React.createContext({
+  eventProperties: {},
+  instances: {},
+});
 
-const AmplitudeProvider = props => {
-  return (
-    <AmplitudeContext.Consumer>
-      {context => <AmplitudeProviderInner {...props} inheritedContext={context} />}
-    </AmplitudeContext.Consumer>
-  );
-};
+const AmplitudeProvider = ({ amplitudeInstance, apiKey, children, eventProperties, userId }) => {
+  const inheritedContext = React.useContext(AmplitudeContext);
 
-const AmplitudeProviderInner = ({
-  amplitudeInstance,
-  apiKey,
-  children,
-  eventProperties,
-  inheritedContext,
-  userId,
-}) => {
+  const contextValue = React.useMemo(() => {
+    return {
+      eventProperties: { ...inheritedContext.eventProperties, ...eventProperties },
+      instances: {
+        ...inheritedContext.instances,
+        [amplitudeInstance._instanceName]: amplitudeInstance,
+      },
+    };
+  }, [
+    amplitudeInstance,
+    amplitudeInstance._instanceName,
+    eventProperties,
+    inheritedContext.eventProperties,
+    inheritedContext.instances,
+  ]);
+
   React.useEffect(() => {
     if (isValidAmplitudeInstance(amplitudeInstance)) {
       if (apiKey) {
@@ -36,28 +42,6 @@ const AmplitudeProviderInner = ({
     // Intentionally ignore changes to props for now and only init/setUser once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const getAmplitudeInstance = React.useCallback(
-    (instanceName = '$default_instance') => {
-      if (amplitudeInstance._instanceName === instanceName) {
-        return amplitudeInstance;
-      } else if (inheritedContext && inheritedContext.getAmplitudeInstance) {
-        return inheritedContext.getAmplitudeInstance(instanceName);
-      } else {
-        return null;
-      }
-    },
-    [amplitudeInstance, amplitudeInstance._instanceName, inheritedContext],
-  );
-
-  const getAmplitudeEventProperties = React.useCallback(() => {
-    return eventProperties || {};
-  }, [eventProperties]);
-
-  const contextValue = React.useMemo(
-    () => ({ getAmplitudeInstance, getAmplitudeEventProperties }),
-    [getAmplitudeEventProperties, getAmplitudeInstance],
-  );
 
   return <AmplitudeContext.Provider value={contextValue}>{children}</AmplitudeContext.Provider>;
 };

@@ -2,19 +2,13 @@ import React from 'react';
 import { AmplitudeContext } from '../components/AmplitudeProvider';
 
 export const useEventProperties = eventProperties => {
-  const { getAmplitudeEventProperties } = React.useContext(AmplitudeContext);
-
-  if (!getAmplitudeEventProperties) {
-    return eventProperties;
-  }
-
-  const inheritedEventProperties = getAmplitudeEventProperties();
+  const context = React.useContext(AmplitudeContext);
 
   if (typeof eventProperties === 'function') {
-    return eventProperties(inheritedEventProperties);
+    return eventProperties(context.eventProperties);
   } else {
     return {
-      ...inheritedEventProperties,
+      ...context.eventProperties,
       ...eventProperties,
     };
   }
