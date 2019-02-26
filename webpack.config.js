@@ -1,11 +1,9 @@
-'use strict';
-
 const path = require('path');
 const webpack = require('webpack');
 
-var env = process.env.NODE_ENV;
+const env = process.env.NODE_ENV;
 
-var reactExternal = {
+const reactExternal = {
   root: 'React',
   commonjs2: 'react',
   commonjs: 'react',
@@ -14,13 +12,13 @@ var reactExternal = {
 
 module.exports = {
   externals: {
-    'react': reactExternal,
+    react: reactExternal,
   },
   entry: {
-    'react-amplitude': './src/index.js'
+    'react-amplitude': './src/index.js',
   },
   output: {
-    path: 'dist/umd',
+    path: path.join(__dirname, 'dist/umd'),
     filename: '[name].js',
     libraryTarget: 'umd',
     library: 'ReactAmplitude',
@@ -29,23 +27,15 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(env),
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        pure_getters: true,
-        unsafe: true,
-        unsafe_comps: true,
-        screw_ie8: true,
-        warnings: false
-      }
-    }),
   ],
+  mode: 'none',
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loaders: ['babel'],
+        use: 'babel-loader',
         include: path.join(__dirname, 'src'),
       },
-    ]
-  }
+    ],
+  },
 };
