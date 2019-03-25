@@ -13,6 +13,7 @@ var reactExternal = {
 };
 
 module.exports = {
+  mode: 'production',
   externals: {
     'react': reactExternal,
   },
@@ -20,7 +21,7 @@ module.exports = {
     'react-amplitude': './src/index.js'
   },
   output: {
-    path: 'dist/umd',
+    path: path.resolve('dist/umd'),
     filename: '[name].js',
     libraryTarget: 'umd',
     library: 'ReactAmplitude',
@@ -29,21 +30,12 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(env),
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        pure_getters: true,
-        unsafe: true,
-        unsafe_comps: true,
-        screw_ie8: true,
-        warnings: false
-      }
-    }),
   ],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loaders: ['babel'],
+        loaders: ['babel-loader'],
         include: path.join(__dirname, 'src'),
       },
     ]

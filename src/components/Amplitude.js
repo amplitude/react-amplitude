@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 import React from 'react';
 import shallowequal from 'shallowequal';
@@ -47,7 +47,8 @@ class Amplitude extends React.Component {
     };
   });
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { props } = this;
 
     if (typeof nextProps.debounceInterval === 'number') {

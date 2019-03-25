@@ -4,7 +4,8 @@ import React from 'react';
 import { isValidAmplitudeInstance } from '../lib/validation';
 
 class AmplitudeProvider extends React.Component {
-  componentWillMount() {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillMount() {
     const { props } = this;
 
     if (isValidAmplitudeInstance(props.amplitudeInstance)) {
