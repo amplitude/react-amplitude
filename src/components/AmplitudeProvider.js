@@ -15,6 +15,10 @@ class AmplitudeProvider extends React.Component {
       if (props.userId) {
         props.amplitudeInstance.setUserId(props.userId);
       }
+
+      if (props.captureEvents) {
+        props.amplitudeInstance.setCaptureEvents(props.captureEvents, props.orgId, props.appId);
+      }
     } else {
       console.error('AmplitudeProvider was not provided with a valid "amplitudeInstance" prop.');
     }

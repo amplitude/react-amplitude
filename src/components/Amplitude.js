@@ -22,7 +22,7 @@ class Amplitude extends React.Component {
     };
   }
 
-  _makeLogEvent = () => (eventType, eventProperties, callback) => {
+  _makeLogEvent = () => (eventType, eventProperties, id, callback) => {
     const amplitudeInstance = this.getAmplitudeInstance();
 
     if (amplitudeInstance) {
@@ -32,16 +32,17 @@ class Amplitude extends React.Component {
           ...this.getAmplitudeEventProperties(),
           ...(eventProperties || {}),
         },
+        id,
         callback,
       );
     }
   };
 
-  instrument = memoize((eventType, func) => {
+  instrument = memoize((eventType, func, id) => {
     return (...params) => {
       const retVal = func ? func(...params) : undefined;
 
-      this.logEvent(eventType);
+      this.logEvent(eventType, null, id);
 
       return retVal;
     };
