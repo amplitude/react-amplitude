@@ -3,7 +3,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
-var env = process.env.NODE_ENV;
+var env = process.env.NODE_ENV || 'development';
 
 var reactExternal = {
   root: 'React',
@@ -20,7 +20,7 @@ module.exports = {
     'react-amplitude': './src/index.js'
   },
   output: {
-    path: 'dist/umd',
+    path: path.join(__dirname, 'dist/umd'),
     filename: '[name].js',
     libraryTarget: 'umd',
     library: 'ReactAmplitude',
@@ -40,10 +40,10 @@ module.exports = {
     }),
   ],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loaders: ['babel'],
+        use: ['babel-loader'],
         include: path.join(__dirname, 'src'),
       },
     ]
