@@ -47,7 +47,7 @@ class Amplitude extends React.Component {
     };
   });
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) { // eslint-disable-line
     const { props } = this;
 
     if (typeof nextProps.debounceInterval === 'number') {
