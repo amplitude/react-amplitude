@@ -5,9 +5,14 @@
 
 A React component library for easy product analytics instrumentation.
 
-## Work In Progress
 
-Please note this library is a work-in-progress. Its API will likely change in future versions.
+## Project Status
+
+react-amplitude is not an officially supported Amplitude SDK or library.
+
+We really like the API and use it extensively within our own product. Unfortunately we haven't been able to devote the  resources to get the library to a state that we're happy to recommend to our users.
+
+If you would like to try it out and give us feedback we would love to hear from you. We just can't promise that we'll get to work on this in the near future.
 
 ## The problems with traditional, imperative event-based logging
 
