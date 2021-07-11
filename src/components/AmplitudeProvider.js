@@ -4,7 +4,7 @@ import React from 'react';
 import { isValidAmplitudeInstance } from '../lib/validation';
 
 class AmplitudeProvider extends React.Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() { // eslint-disable-line
     const { props } = this;
 
     if (isValidAmplitudeInstance(props.amplitudeInstance)) {
