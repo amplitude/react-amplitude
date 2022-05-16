@@ -8,11 +8,9 @@ A React component library for easy product analytics instrumentation.
 
 ## Project Status
 
-react-amplitude is not an officially supported Amplitude SDK or library.
+react-amplitude is not an officially supported Amplitude SDK or library, and deprecated now.
 
-We really like the API and use it extensively within our own product. Unfortunately we haven't been able to devote the  resources to get the library to a state that we're happy to recommend to our users.
-
-If you would like to try it out and give us feedback we would love to hear from you. We just can't promise that we'll get to work on this in the near future.
+Please use our offical [Typescript SDK](https://github.com/amplitude/Amplitude-TypeScript) to track with React!
 
 ## The problems with traditional, imperative event-based logging
 
